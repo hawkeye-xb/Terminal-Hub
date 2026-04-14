@@ -1,0 +1,73 @@
+{{ define "main" }}
+
+{{- partial "profile.html" . -}}
+
+<section class="section">
+  <h2 class="section-title">PROJECTS</h2>
+  <div class="project-grid">
+    {{- range (where .Site.RegularPages "Section" "projects") -}}
+      {{- partial "project-card.html" . -}}
+    {{- end -}}
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">RECENT</h2>
+  <div class="stream">
+    {{- range (first 15 .Site.RegularPages) -}}
+      {{- partial "stream-item.html" . -}}
+    {{- end -}}
+  </div>
+</section>
+
+{{/* 注入内容数据供 CLI 使用 — 用 Hugo dict + jsonify 生成合法 JSON */}}
+{{ $posts := slice }}
+{{ range (where .Site.RegularPages "Section" "posts") }}
+  {{ $posts = $posts | append (dict
+    "title" .Title
+    "url" .RelPermalink
+    "date" (.Date.Format "2006-01-02")
+    "summary" (.Summary | plainify | truncate 120)
+    "tags" (.Params.tags | default slice)
+    "words" .WordCount
+  ) }}
+{{ end }}
+
+{{ $projects := slice }}
+{{ range (where .Site.RegularPages "Section" "projects") }}
+  {{ $projects = $projects | append (dict
+    "title" .Title
+    "url" .RelPermalink
+    "status" (.Params.status | default "stable")
+    "description" (.Params.description | default "")
+    "tech" (.Params.tech | default slice)
+  ) }}
+{{ end }}
+
+{{ $moments := slice }}
+{{ range (where .Site.RegularPages "Section" "moments") }}
+  {{ $moments = $moments | append (dict
+    "title" .Title
+    "url" .RelPermalink
+    "date" (.Date.Format "2006-01-02")
+    "summary" (.Summary | plainify | truncate 120)
+  ) }}
+{{ end }}
+
+{{ $tags := newScratch }}
+{{ $tags.Set "list" slice }}
+{{ range .Site.Taxonomies.tags }}
+  {{ $tags.Set "list" ($tags.Get "list" | append (dict "name" .Page.Title "count" .Count "url" .Page.RelPermalink)) }}
+{{ end }}
+
+{{ $termData := dict
+  "posts" $posts
+  "projects" $projects
+  "moments" $moments
+  "tags" ($tags.Get "list")
+}}
+<script id="terminal-data" type="application/json">
+  {{ $termData | jsonify | safeJS }}
+</script>
+
+{{ end }}

@@ -1,0 +1,19 @@
+baseURL = "https://example.com/"
+languageCode = "zh-cn"
+title = "Shala Mira — Terminal Hub"
+theme = "Terminal-Hub-2026"
+
+[params]
+author = "Shala Mira"
+bio = "Full-stack Developer · Indie Maker"
+tagline = "Efficiency living for better daydreaming."
+avatar = "images/avatar.jpg"
+colorScheme = "green"
+
+[params.social]
+github = "https://github.com/shalamira"
+email = "hello@example.com"
+twitter = "https://twitter.com/shalamira"
+
+[pagination]
+pagerSize = 20

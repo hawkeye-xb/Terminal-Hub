@@ -1,0 +1,10 @@
+name = "Terminal Hub"
+license = "MIT"
+licenselink = "https://github.com/user/terminal-hub-theme/blob/main/LICENSE"
+description = "A terminal-style Hugo theme for indie developers."
+tags = ["terminal", "portfolio", "minimal", "dark", "cli"]
+min_version = "0.120.0"
+
+[author]
+  name = ""
+  homepage = ""

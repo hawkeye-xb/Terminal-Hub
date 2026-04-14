@@ -1,0 +1,16 @@
+<a class="project-card" href="{{ .RelPermalink }}">
+  <div class="project-header">
+    <span class="project-name">{{ .Title }}</span>
+    {{ with .Params.status }}
+    <span class="project-status" data-status="{{ . }}">
+      {{- if eq . "stable" }}●{{ else if eq . "alpha" }}◐{{ else }}○{{ end }} {{ . -}}
+    </span>
+    {{ end }}
+  </div>
+  {{ with .Params.description }}<p class="project-desc">{{ . }}</p>{{ end }}
+  {{ with .Params.tech }}
+  <div class="project-tech">
+    {{ range . }}<span class="tag">{{ . }}</span>{{ end }}
+  </div>
+  {{ end }}
+</a>

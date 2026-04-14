@@ -1,0 +1,11 @@
+{{ define "main" }}
+<section class="section">
+  <h1 class="section-title">{{ .Title | upper }}</h1>
+  <div class="stream">
+    {{- range .Pages -}}
+      {{- partial "stream-item.html" . -}}
+    {{- end -}}
+  </div>
+  {{ template "_internal/pagination.html" . }}
+</section>
+{{ end }}

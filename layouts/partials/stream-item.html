@@ -1,0 +1,5 @@
+<a class="stream-item" href="{{ .RelPermalink }}">
+  <time class="stream-date">{{ .Date.Format "2006-01-02" }}</time>
+  <span class="stream-type" data-type="{{ .Section }}">{{ upper .Section | truncate 4 "" }}</span>
+  <span class="stream-title">{{ .Title }}</span>
+</a>

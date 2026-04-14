@@ -1,0 +1,8 @@
+{{ define "main" }}
+<div class="error-page">
+  <h1>404</h1>
+  <p>bash: page not found</p>
+  <p>Try <code>cd /</code> to go home.</p>
+  <a href="{{ "/" | relURL }}" class="btn">cd /</a>
+</div>
+{{ end }}
