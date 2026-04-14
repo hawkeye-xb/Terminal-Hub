@@ -5,7 +5,7 @@
 <section class="section">
   <h2 class="section-title">PROJECTS</h2>
   <div class="project-grid">
-    {{- range (where .Site.RegularPages "RelPermalink" "/zh/projects/") -}}
+    {{- range (where .Site.RegularPages "RelPermalink" "/projects/") -}}
       {{- partial "project-card.html" . -}}
     {{- end -}}
   </div>
@@ -14,44 +14,50 @@
 <section class="section">
   <h2 class="section-title">RECENT</h2>
   <div class="stream">
-    {{- range (first 15 (where .Site.RegularPages "RelPermalink" "/zh/posts/")) -}}
+    {{- range first 15 (where .Site.RegularPages "RelPermalink" "/posts/") -}}
       {{- partial "stream-item.html" . -}}
     {{- end -}}
   </div>
 </section>
 
-{{/* 注入内容数据供 CLI 使用 — 用 Hugo dict + jsonify 生成合法 JSON */}}
+{{/* 注入内容数据供 CLI 使用 */}}
 {{ $posts := slice }}
-{{ range (where .Site.RegularPages "RelPermalink" "/zh/posts/") }}
-  {{ $posts = $posts | append (dict
-    "title" .Title
-    "url" .RelPermalink
-    "date" (.Date.Format "2006-01-02")
-    "summary" (.Summary | plainify | truncate 120)
-    "tags" (.Params.tags | default slice)
-    "words" .WordCount
-  ) }}
+{{ range .Site.RegularPages }}
+  {{ if hasPrefix .RelPermalink "/zh/posts/" }}
+    {{ $posts = $posts | append (dict
+      "title" .Title
+      "url" .RelPermalink
+      "date" (.Date.Format "2006-01-02")
+      "summary" (.Summary | plainify | truncate 120)
+      "tags" (.Params.tags | default slice)
+      "words" .WordCount
+    ) }}
+  {{ end }}
 {{ end }}
 
 {{ $projects := slice }}
-{{ range (where .Site.RegularPages "RelPermalink" "/zh/projects/") }}
-  {{ $projects = $projects | append (dict
-    "title" .Title
-    "url" .RelPermalink
-    "status" (.Params.status | default "stable")
-    "description" (.Params.description | default "")
-    "tech" (.Params.tech | default slice)
-  ) }}
+{{ range .Site.RegularPages }}
+  {{ if hasPrefix .RelPermalink "/zh/projects/" }}
+    {{ $projects = $projects | append (dict
+      "title" .Title
+      "url" .RelPermalink
+      "status" (.Params.status | default "stable")
+      "description" (.Params.description | default "")
+      "tech" (.Params.tech | default slice)
+    ) }}
+  {{ end }}
 {{ end }}
 
 {{ $moments := slice }}
-{{ range (where .Site.RegularPages "RelPermalink" "/zh/moments/") }}
-  {{ $moments = $moments | append (dict
-    "title" .Title
-    "url" .RelPermalink
-    "date" (.Date.Format "2006-01-02")
-    "summary" (.Summary | plainify | truncate 120)
-  ) }}
+{{ range .Site.RegularPages }}
+  {{ if hasPrefix .RelPermalink "/zh/moments/" }}
+    {{ $moments = $moments | append (dict
+      "title" .Title
+      "url" .RelPermalink
+      "date" (.Date.Format "2006-01-02")
+      "summary" (.Summary | plainify | truncate 120)
+    ) }}
+  {{ end }}
 {{ end }}
 
 {{ $tags := newScratch }}
