@@ -1,0 +1,19 @@
+# Hugo
+exampleSite/public/
+exampleSite/.hugo_build.lock
+exampleSite/resources/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node (if used for build tools)
+node_modules/
+package-lock.json
