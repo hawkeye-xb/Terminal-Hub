@@ -2,6 +2,7 @@
 exampleSite/public/
 exampleSite/.hugo_build.lock
 exampleSite/resources/
+exampleSite/themes/
 
 # OS
 .DS_Store
