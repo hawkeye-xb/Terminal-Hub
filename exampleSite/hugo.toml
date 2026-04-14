@@ -1,7 +1,7 @@
 baseURL = "https://example.com/"
 languageCode = "zh-cn"
 title = "Shala Mira — Terminal Hub"
-theme = "Terminal-Hub-2026"
+theme = "Terminal-Hub"
 
 [params]
 author = "Shala Mira"
