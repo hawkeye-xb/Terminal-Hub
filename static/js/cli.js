@@ -988,6 +988,9 @@
   /** 把 Hugo URL 映射到 CLI 路径并导航 */
   function navigateToHref(href) {
     var parts = href.replace(/^\/|\/$/g, '').split('/');
+    // 跳过语言前缀 (zh/en)
+    var langs = ["zh", "en"];
+    if (langs.indexOf(parts[0]) !== -1) parts = parts.slice(1);
     var section = parts[0];
     var slug = parts.slice(1).join('/');
 

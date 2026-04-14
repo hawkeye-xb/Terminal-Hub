@@ -16,7 +16,7 @@
 <section class="section">
   <h2 class="section-title">RECENT</h2>
   <div class="stream">
-    {{- range (first 15 .Site.RegularPages) -}}
+    {{- range first 15 (where .Site.RegularPages "RelPermalink" "/posts/") -}}
       {{- partial "stream-item.html" . -}}
     {{- end -}}
   </div>
