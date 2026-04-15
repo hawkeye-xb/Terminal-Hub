@@ -5,10 +5,8 @@
 <section class="section">
   <h2 class="section-title">PROJECTS</h2>
   <div class="project-grid">
-    {{- range .Site.RegularPages -}}
-      {{- if findRE `/projects/` .RelPermalink -}}
-        {{- partial "project-card.html" . -}}
-      {{- end -}}
+    {{- range where .Site.RegularPages "Section" "projects" -}}
+      {{- partial "project-card.html" . -}}
     {{- end -}}
   </div>
 </section>
@@ -16,7 +14,7 @@
 <section class="section">
   <h2 class="section-title">RECENT</h2>
   <div class="stream">
-    {{- range first 15 (where .Site.RegularPages "RelPermalink" "/posts/") -}}
+    {{- range first 15 (where .Site.RegularPages "Section" "posts") -}}
       {{- partial "stream-item.html" . -}}
     {{- end -}}
   </div>
@@ -24,8 +22,7 @@
 
 {{/* 注入内容数据供 CLI 使用 — 用 Hugo dict + jsonify 生成合法 JSON */}}
 {{ $posts := slice }}
-{{ range .Site.RegularPages }}
-  {{ if findRE `/posts/` .RelPermalink }}
+{{ range where .Site.RegularPages "Section" "posts" }}
   {{ $posts = $posts | append (dict
     "title" .Title
     "url" .RelPermalink
@@ -34,12 +31,10 @@
     "tags" (.Params.tags | default slice)
     "words" .WordCount
   ) }}
-  {{ end }}
 {{ end }}
 
 {{ $projects := slice }}
-{{ range .Site.RegularPages }}
-  {{ if findRE `/projects/` .RelPermalink }}
+{{ range where .Site.RegularPages "Section" "projects" }}
   {{ $projects = $projects | append (dict
     "title" .Title
     "url" .RelPermalink
@@ -47,19 +42,16 @@
     "description" (.Params.description | default "")
     "tech" (.Params.tech | default slice)
   ) }}
-  {{ end }}
 {{ end }}
 
 {{ $moments := slice }}
-{{ range .Site.RegularPages }}
-  {{ if findRE `/moments/` .RelPermalink }}
+{{ range where .Site.RegularPages "Section" "moments" }}
   {{ $moments = $moments | append (dict
     "title" .Title
     "url" .RelPermalink
     "date" (.Date.Format "2006-01-02")
     "summary" (.Summary | plainify | truncate 120)
   ) }}
-  {{ end }}
 {{ end }}
 
 {{ $tags := newScratch }}

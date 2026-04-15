@@ -988,14 +988,18 @@
   /** 把 Hugo URL 映射到 CLI 路径并导航 */
   function navigateToHref(href) {
     var parts = href.replace(/^\/|\/$/g, '').split('/');
-    // 跳过语言前缀 (zh/en)
-    var langs = ["zh", "en"];
-    if (langs.indexOf(parts[0]) !== -1) parts = parts.slice(1);
+    var dirMap = { posts: 'articles', projects: 'projects', moments: 'moments', tags: 'tags' };
+
     var section = parts[0];
     var slug = parts.slice(1).join('/');
-
-    var dirMap = { posts: 'articles', projects: 'projects', moments: 'moments', tags: 'tags' };
     var dir = dirMap[section];
+
+    // 第一段不是已知 section，可能是语言前缀（如 /zh/posts/...），尝试第二段
+    if (!dir && parts.length > 1) {
+      section = parts[1];
+      slug = parts.slice(2).join('/');
+      dir = dirMap[section];
+    }
 
     if (dir) {
       // 进入对应 section（硬导航，清空覆盖栈）
