@@ -23,12 +23,18 @@
 {{/* 注入内容数据供 CLI 使用 — 用 Hugo dict + jsonify 生成合法 JSON */}}
 {{ $posts := slice }}
 {{ range where .Site.RegularPages "Section" "posts" }}
+  {{ $cats := slice }}
+  {{ with .Params.categories }}{{ $cats = . }}{{ end }}
+  {{ $ser := slice }}
+  {{ with .Params.series }}{{ $ser = . }}{{ end }}
   {{ $posts = $posts | append (dict
     "title" .Title
     "url" .RelPermalink
     "date" (.Date.Format "2006-01-02")
     "summary" (.Summary | plainify | truncate 120)
     "tags" (.Params.tags | default slice)
+    "categories" $cats
+    "series" $ser
     "words" .WordCount
   ) }}
 {{ end }}
@@ -60,11 +66,25 @@
   {{ $tags.Set "list" ($tags.Get "list" | append (dict "name" .Page.Title "count" .Count "url" .Page.RelPermalink)) }}
 {{ end }}
 
+{{ $categories := newScratch }}
+{{ $categories.Set "list" slice }}
+{{ range .Site.Taxonomies.categories }}
+  {{ $categories.Set "list" ($categories.Get "list" | append (dict "name" .Page.Title "count" .Count "url" .Page.RelPermalink)) }}
+{{ end }}
+
+{{ $series := newScratch }}
+{{ $series.Set "list" slice }}
+{{ range .Site.Taxonomies.series }}
+  {{ $series.Set "list" ($series.Get "list" | append (dict "name" .Page.Title "count" .Count "url" .Page.RelPermalink)) }}
+{{ end }}
+
 {{ $termData := dict
   "posts" $posts
   "projects" $projects
   "moments" $moments
   "tags" ($tags.Get "list")
+  "categories" ($categories.Get "list")
+  "series" ($series.Get "list")
 }}
 <script id="terminal-data" type="application/json">
   {{ $termData | jsonify | safeJS }}

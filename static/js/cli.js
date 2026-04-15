@@ -14,7 +14,7 @@
 
   // ═══════════ Constants ═══════════
 
-  var DIRS     = ['articles', 'projects', 'moments', 'tags'];
+  var DIRS     = ['articles', 'projects', 'moments', 'tags', 'categories', 'series'];
   var SEC_MAP  = { articles: 'posts', projects: 'projects', moments: 'moments' };
   var THEMES   = ['green', 'amber', 'cyber'];
   var COMMANDS = ['cd', 'ls', 'cat', 'open', 'grep', 'tree', 'pwd', 'clear', 'theme', 'help'];
@@ -463,17 +463,16 @@
     pushOverlay(null);
 
     var lines = ['<span class="t-dir">~/</span>'];
-    var dirs = ['articles', 'projects', 'moments'];
-    var hasTags = (data.tags || []).length > 0;
-
-    dirs.forEach(function (dir, i) {
-      var n = getItemsForDir(dir).length;
-      var pre = (i < dirs.length - 1 || hasTags) ? '├── ' : '└── ';
-      lines.push(pre + '<span class="t-dir">' + dir + '/</span>  <span class="t-meta">(' + n + ')</span>');
+    var allDirs = [];
+    DIRS.forEach(function (dir) {
+      var items = getItemsForDir(dir);
+      if (items.length > 0) allDirs.push({ name: dir, count: items.length });
     });
-    if (hasTags) {
-      lines.push('└── <span class="t-dir">tags/</span>  <span class="t-meta">(' + data.tags.length + ')</span>');
-    }
+
+    allDirs.forEach(function (d, i) {
+      var pre = i < allDirs.length - 1 ? '├── ' : '└── ';
+      lines.push(pre + '<span class="t-dir">' + d.name + '/</span>  <span class="t-meta">(' + d.count + ')</span>');
+    });
     showCmdView('<pre class="tree-view">' + lines.join('\n') + '</pre>'
               + '<p class="cmd-hint">Esc 返回</p>');
   };
@@ -512,7 +511,7 @@
     pushOverlay(null);
 
     var rows = [
-      ['cd &lt;dir&gt;',       '进入目录 (articles / projects / moments / tags)'],
+      ['cd &lt;dir&gt;',       '进入目录 (articles / projects / moments / tags / categories / series)'],
       ['cd ..',               '返回上级 · Esc 快捷键'],
       ['ls [-l]',             '列出当前目录'],
       ['cat &lt;N | name&gt;','查看第 N 项内容'],
@@ -582,6 +581,10 @@
       targets = targets.concat(DIRS);
     } else if (parts[0] === 'tags' && parts.length === 1) {
       (data.tags || []).forEach(function (t) { targets.push(t.name); });
+    } else if (parts[0] === 'categories' && parts.length === 1) {
+      (data.categories || []).forEach(function (c) { targets.push(c.name); });
+    } else if (parts[0] === 'series' && parts.length === 1) {
+      (data.series || []).forEach(function (s) { targets.push(s.name); });
     }
 
     return targets
@@ -719,6 +722,16 @@
         return t.name.toLowerCase() === parts[1].toLowerCase();
       });
     }
+    if (parts[0] === 'categories') {
+      return (data.categories || []).some(function (c) {
+        return c.name.toLowerCase() === parts[1].toLowerCase();
+      });
+    }
+    if (parts[0] === 'series') {
+      return (data.series || []).some(function (s) {
+        return s.name.toLowerCase() === parts[1].toLowerCase();
+      });
+    }
     return false;
   }
 
@@ -739,12 +752,36 @@
         return (it.tags || []).some(function (t) { return t.toLowerCase() === name; });
       });
     }
+    if (dir === 'categories' && !sub) {
+      return (data.categories || []).map(function (c) {
+        return { title: c.name, meta: c.count + ' articles', url: null, _isDir: true };
+      });
+    }
+    if (dir === 'categories' && sub) {
+      var catName = sub.toLowerCase();
+      return (data.posts || []).filter(function (it) {
+        return (it.categories || []).some(function (c) { return c.toLowerCase() === catName; });
+      });
+    }
+    if (dir === 'series' && !sub) {
+      return (data.series || []).map(function (s) {
+        return { title: s.name, meta: s.count + ' articles', url: null, _isDir: true };
+      });
+    }
+    if (dir === 'series' && sub) {
+      var serName = sub.toLowerCase();
+      return (data.posts || []).filter(function (it) {
+        return (it.series || []).some(function (s) { return s.toLowerCase() === serName; });
+      });
+    }
     var sec = SEC_MAP[dir];
     return (sec && data[sec]) ? data[sec] : [];
   }
 
   function getItemsForDir(dir) {
     if (dir === 'tags') return data.tags || [];
+    if (dir === 'categories') return data.categories || [];
+    if (dir === 'series') return data.series || [];
     var sec = SEC_MAP[dir];
     return (sec && data[sec]) ? data[sec] : [];
   }
@@ -988,7 +1025,7 @@
   /** 把 Hugo URL 映射到 CLI 路径并导航 */
   function navigateToHref(href) {
     var parts = href.replace(/^\/|\/$/g, '').split('/');
-    var dirMap = { posts: 'articles', projects: 'projects', moments: 'moments', tags: 'tags' };
+    var dirMap = { posts: 'articles', projects: 'projects', moments: 'moments', tags: 'tags', categories: 'categories', series: 'series' };
 
     var section = parts[0];
     var slug = parts.slice(1).join('/');
